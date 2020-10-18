@@ -3,27 +3,39 @@ new Vue({
     data: {
         playerHealth: 100,
         monsterHealth: 100,
-        isGameRunning: false
+        isGameRunning: false,
+        turns: []
     },
     methods:{
         startGame(){
             this.isGameRunning= true;
             this.playerHealth= 100;
             this.monsterHealth= 100;
+            this.turns= [];
         },
         attack(){
-            
-            this.monsterHealth -= this.calculateDamage(3, 10);
+            let damage = this.calculateDamage(3, 10);
+            this.monsterHealth -= damage;
+            this.turns.unshift({
+                text: 'Player Hits Monster For' + damage,
+                playerTurn: true
+            })
             if(this.chackWin()){
                 return;
             }
 
-            this.playerHealth -= this.calculateDamage(5, 12);;
+            this.monsterAttack();
             this.chackWin()
         },
         specialAttack(){
+            let damage = this.calculateDamage(10, 20);
+            this.monsterHealth -= damage;
 
-            this.monsterHealth -= this.calculateDamage(10, 20);
+            this.turns.unshift({
+                text: 'Player Hits Monster Hard For' + damage,
+                playerTurn: true
+            })
+
             if(this.chackWin()){
                 return;
             }
@@ -38,18 +50,26 @@ new Vue({
             }else{
                 this.playerHealth = 100; 
             }
+            this.turns.unshift({
+                text: 'Player Heal 10',
+                playerTurn: true
+            })
 
             this.monsterAttack();
         },
         giveUp(){
 
             this.isGameRunning= false;
-            
+
         },
         monsterAttack(){
-
-            this.playerHealth -= this.calculateDamage(5, 12);;
-            this.chackWin()
+            let damage = this.calculateDamage(5, 12);
+            this.playerHealth -= damage;
+            this.turns.unshift({
+                text: 'Monster Hits Player For' + damage,
+                playerTurn: false
+            })
+            this.chackWin();
 
         },
         calculateDamage(min, max){
